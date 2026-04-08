@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
   const BMS_URL =
-    'https://in.bookmyshow.com/buytickets/michael-hyderabad/movie-hyd-ET00418765-MT/20260424';
+    'https://in.bookmyshow.com/movies/hyderabad/michael/buytickets/ET00470110';
 
   try {
     const response = await fetch(BMS_URL, {
