@@ -59,6 +59,13 @@ export default async function handler(req, res) {
         if (hasShowtimes && hasVenues && !notOpen) {
           status = 'tickets_live';
           message = theatres.length > 0 ? `Live at ${theatres.length} theatre${theatres.length > 1 ? 's' : ''}` : 'Showtimes live — book now!';
+
+          const msg = `🎬 <b>Michael tickets are LIVE in ${city.label}!</b>\n\nBook now 👇\n${bmsUrl}`;
+          await fetch(`${process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : 'http://localhost:3000'}/api/notify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg }),
+          });
         } else if (hasVenues || body.includes('michael')) {
           status = 'listed_not_open';
           message = 'Listed but not open yet.';
