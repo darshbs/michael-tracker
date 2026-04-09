@@ -72,13 +72,23 @@ npm install
 
 Push to GitHub → import on [vercel.com](https://vercel.com) → deploy.
 
+Once deployed, you'll see the landing page:
+
+![Michael Tracker Landing Page](screenshots/landing-page.png)
+
+---
+
 ### 2. Create a Telegram bot
 
 1. Open Telegram → search `@BotFather` → `/newbot`
-2. Copy the **token** it gives you
+2. Give it a name → copy the **token** it gives you
 3. Message your new bot (send anything)
 4. Visit `https://api.telegram.org/bot<TOKEN>/getUpdates`
 5. Copy your `chat_id` from the response
+
+![Get Chat ID](screenshots/get-chat-id.png)
+
+---
 
 ### 3. Add environment variables on Vercel
 
@@ -89,11 +99,19 @@ In your Vercel project → Settings → Environment Variables:
 | `TELEGRAM_BOT_TOKEN` | your bot token from BotFather |
 | `TELEGRAM_CHAT_ID` | your chat ID from getUpdates |
 
+![Vercel Environment Variables](screenshots/vercel-env-variables.png)
+
+---
+
 ### 4. Set up GitHub Actions cron
 
 The file `.github/workflows/check.yml` is already in the repo. It runs every 5 minutes and pings your Vercel API automatically — no extra setup needed.
 
-To test it manually: GitHub repo → **Actions** tab → **Check Tickets** → **Run workflow**
+To test manually: GitHub repo → **Actions** tab → **Check Tickets** → **Run workflow**
+
+![GitHub Actions — Check Tickets Workflow](screenshots/github-actions.png)
+
+---
 
 ### 5. Test Telegram
 
@@ -104,6 +122,10 @@ https://michael-tracker.vercel.app/api/notify
 ```
 
 You should receive a message from your bot confirming everything works.
+
+![Telegram Notification](screenshots/telegram-notification.png)
+
+![Telegram Bot Message Test](screenshots/telegram-bot-test.png)
 
 ---
 
