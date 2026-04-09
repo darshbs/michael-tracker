@@ -133,7 +133,9 @@ export default function Home() {
           {/* HERO */}
           <header style={s.hero}>
             <div style={s.badge}>BOOKMYSHOW TICKET TRACKER</div>
-            <img src="/michael-movie-title.png" alt="Michael" style={{ maxWidth: '380px', width: '100%', margin: '0 auto 6px', display: 'block' }} />
+            <a href="https://michael.movie" target="_blank" rel="noopener noreferrer">
+              <img src="/michael-movie-title.png" alt="Michael" style={{ maxWidth: '380px', width: '100%', margin: '0 auto 6px', display: 'block', cursor: 'pointer' }} />
+            </a>
             <p style={s.sub}>The Official Biopic · King of Pop</p>
           </header>
 
@@ -254,10 +256,14 @@ export default function Home() {
           </div>
 
           <footer style={{ textAlign: 'center', fontSize: 11, color: '#7A6A58', paddingTop: 16, paddingBottom: 8 }}>
-            Created for Michael Fans with love. ·{' '}
+            Created for Michael fans with love. ·{' '}
             <a href="https://github.com/darshbs/michael-tracker" target="_blank" rel="noopener noreferrer" style={{ color: '#7A6228', textDecoration: 'none' }}>
               GitHub
             </a>
+            <br /><br />
+            <span style={{ fontSize: 10, color: '#3A3028' }}>
+              The "Michael" title logo and all related assets are the property of GK Films and the Michael Jackson Estate. Distributed by Lionsgate (US) and Universal Pictures (International). This is an independent fan-made project, not affiliated with or endorsed by the filmmakers or studio.
+            </span>
           </footer>
         </div>
       </div>
