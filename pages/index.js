@@ -255,7 +255,7 @@ export default function Home() {
             </div>
           </div>
 
-          <footer style={{ textAlign: 'center', fontSize: 11, color: '#6f6f6fff', paddingTop: 16, paddingBottom: 8 }}>
+          <footer style={{ textAlign: 'center', fontSize: 11, color: '#a9a9a9ff', paddingTop: 16, paddingBottom: 8 }}>
             Created for Michael fans with love. ·{' '}
             <a href="https://github.com/darshbs/michael-tracker" target="_blank" rel="noopener noreferrer" style={{ color: '#7A6228', textDecoration: 'none' }}>
               GitHub
