@@ -1,0 +1,13 @@
+name: Check Tickets
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping tracker
+        run: |
+          curl -s "https://michael-tracker.vercel.app/api/check?cities=HYD,MUMBAI,BANG,CHEN,NCR&date=20260424&cron=true"
