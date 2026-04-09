@@ -60,11 +60,13 @@ export default async function handler(req, res) {
           status = 'tickets_live';
           message = theatres.length > 0 ? `Live at ${theatres.length} theatre${theatres.length > 1 ? 's' : ''}` : 'Showtimes live — book now!';
 
-          const msg = `🎬 <b>Michael tickets are LIVE in ${city.label}!</b>\n\nBook now 👇\n${bmsUrl}`;
-          await fetch(`${process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : 'http://localhost:3000'}/api/notify`, {
+          const appUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+          await fetch(`${appUrl}/api/notify`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: msg }),
+            body: JSON.stringify({
+              message: `🎬 <b>Michael tickets LIVE in ${city.label}!</b>\n\nBook now 👇\n${bmsUrl}`,
+            }),
           });
         } else if (hasVenues || body.includes('michael')) {
           status = 'listed_not_open';
