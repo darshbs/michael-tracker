@@ -15,6 +15,14 @@ Live at → **[michael-tracker.vercel.app](https://michael-tracker.vercel.app)**
 - Sends a Telegram message the instant tickets go live
 - No need to keep any tab open — runs entirely in the background
 
+A couple of honest catch:
+
+- The live site works only while you have the tab open. The background automation is tied to my own setup.
+- The Telegram notification is hardcoded to my personal bot, so it only alerts me.
+- I'm also planning to expand this so more users can directly set up notifications without having to manually configure their own bot, will build it out if this whole thing actually works when tickets go live
+
+But if you want to set up your own version with your own bot, all the instructions are in this README, it takes about 10-15 minutes.
+
 ---
 
 ## How it works
