@@ -261,7 +261,7 @@ export default function Home() {
               GitHub
             </a>
             <br /><br />
-            <span style={{ fontSize: 10, color: '#3A3028' }}>
+            <span style={{ fontSize: 10, color: '#666464ff' }}>
               The "Michael" title logo and all related assets are the property of GK Films and the Michael Jackson Estate. Distributed by Lionsgate (US) and Universal Pictures (International). This is an independent fan-made project, not affiliated with or endorsed by the filmmakers or studio.
             </span>
           </footer>
