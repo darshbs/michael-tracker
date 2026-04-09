@@ -253,8 +253,11 @@ export default function Home() {
             </div>
           </div>
 
-          <footer style={{ textAlign: 'center', fontSize: 11, color: '#3A3028', paddingTop: 16 }}>
-            Michael (2026) · BookMyShow India · Tracks all cities &amp; theatres
+          <footer style={{ textAlign: 'center', fontSize: 11, color: '#3A3028', paddingTop: 16, paddingBottom: 8 }}>
+            Created for Michael Fans with love. ·{' '}
+              <a href="https://github.com/darshbs/michael-tracker" target="_blank" rel="noopener noreferrer" style={{ color: '#7A6228', textDecoration: 'none' }}>
+                GitHub
+              </a>
           </footer>
         </div>
       </div>
