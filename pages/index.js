@@ -3,12 +3,12 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import CITIES from '../lib/cities';
 
 const STATUS_CFG = {
-  idle:            { color: '#7A7060', pulse: false },
-  checking:        { color: '#4A90D9', pulse: true  },
-  not_listed:      { color: '#4A4438', pulse: false },
+  idle: { color: '#7A7060', pulse: false },
+  checking: { color: '#4A90D9', pulse: true },
+  not_listed: { color: '#4A4438', pulse: false },
   listed_not_open: { color: '#EF9F27', pulse: false },
-  tickets_live:    { color: '#C9A84C', pulse: true  },
-  error:           { color: '#E24B4A', pulse: false },
+  tickets_live: { color: '#C9A84C', pulse: true },
+  error: { color: '#E24B4A', pulse: false },
 };
 
 function playAlert() {
@@ -24,7 +24,7 @@ function playAlert() {
       o.start(ctx.currentTime + i * 0.13);
       o.stop(ctx.currentTime + i * 0.13 + 0.4);
     });
-  } catch (_) {}
+  } catch (_) { }
 }
 
 const BMS_BOOK_URL = (slug, date) =>
@@ -33,7 +33,7 @@ const BMS_BOOK_URL = (slug, date) =>
 export default function Home() {
   const today = new Date();
   const defaultDate = '20260424';
-  const formatInput = d => `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}`;
+  const formatInput = d => `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`;
   const parseDate = v => v.replace(/-/g, '');
 
   const [selectedCities, setSelectedCities] = useState(['HYD']);
@@ -133,7 +133,7 @@ export default function Home() {
           {/* HERO */}
           <header style={s.hero}>
             <div style={s.badge}>BOOKMYSHOW TICKET TRACKER</div>
-            <h1 style={s.title}>MICHAEL</h1>
+            <img src="/michael-movie-title.png" alt="Michael" style={{ maxWidth: '380px', width: '100%', margin: '0 auto 6px', display: 'block' }} />
             <p style={s.sub}>The Official Biopic · King of Pop</p>
           </header>
 
@@ -255,9 +255,9 @@ export default function Home() {
 
           <footer style={{ textAlign: 'center', fontSize: 11, color: '#7A6A58', paddingTop: 16, paddingBottom: 8 }}>
             Created for Michael Fans with love. ·{' '}
-              <a href="https://github.com/darshbs/michael-tracker" target="_blank" rel="noopener noreferrer" style={{ color: '#7A6228', textDecoration: 'none' }}>
-                GitHub
-              </a>
+            <a href="https://github.com/darshbs/michael-tracker" target="_blank" rel="noopener noreferrer" style={{ color: '#7A6228', textDecoration: 'none' }}>
+              GitHub
+            </a>
           </footer>
         </div>
       </div>
@@ -282,7 +282,7 @@ const s = {
   card: { background: '#111', border: '0.5px solid #1E1E1E', borderRadius: 8, padding: '12px 14px', marginBottom: 10 },
   cardLabel: { fontSize: 10, color: '#7A6A58', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 10 },
   cityGrid: { display: 'flex', flexWrap: 'wrap', gap: 6 },
-  cityBtn: { background: 'transparent', border: '0.5px solid #2A2A2A', color: '#9A8A78', fontSize: 12, padding: '5px 12px', borderRadius: 3, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'all 0.15s' }, 
+  cityBtn: { background: 'transparent', border: '0.5px solid #2A2A2A', color: '#9A8A78', fontSize: 12, padding: '5px 12px', borderRadius: 3, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'all 0.15s' },
   cityBtnOn: { background: 'rgba(201,168,76,0.1)', border: '0.5px solid #7A6228', color: '#C9A84C' },
   dateInput: { background: 'transparent', border: 'none', color: '#F0EAD6', fontSize: 14, fontFamily: "'DM Sans', sans-serif", outline: 'none', width: '100%', cursor: 'pointer' },
   select: { background: 'transparent', border: 'none', color: '#F0EAD6', fontSize: 13, fontFamily: "'DM Sans', sans-serif", outline: 'none', width: '100%', cursor: 'pointer' },
