@@ -1,12 +1,3 @@
 {
-  "framework": "nextjs",
-  "buildCommand": "next build",
-  "devCommand": "next dev",
-  "installCommand": "npm install",
-  "crons": [
-    {
-      "path": "/api/check?cities=HYD,MUMBAI,BANG,CHEN,NCR&date=20260424&cron=true",
-      "schedule": "0 * * * *"
-    }
-  ]
+  "framework": "nextjs"
 }
