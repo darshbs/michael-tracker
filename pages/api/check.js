@@ -1,78 +1,82 @@
-// pages/api/check.js
-// Server-side proxy — avoids CORS, keeps checks reliable
+const CITIES = require('../../lib/cities');
+
+const EVENT_CODE = 'ET00470110';
+const MOVIE_SLUG = 'michael';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  const BMS_URL =
-    'https://in.bookmyshow.com/movies/hyderabad/michael/buytickets/ET00470110';
+  const { cities: citiesParam, date } = req.query;
+  if (!citiesParam || !date)
+    return res.status(400).json({ error: 'Missing cities or date param' });
 
-  try {
-    const response = await fetch(BMS_URL, {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        Accept:
-          'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-IN,en;q=0.9',
-        Referer: 'https://in.bookmyshow.com/',
-      },
-      cache: 'no-store',
-    });
+  const selectedCodes = citiesParam.split(',');
+  const selectedCities = CITIES.filter(c => selectedCodes.includes(c.code));
 
-    const html = await response.text();
-    const lower = html.toLowerCase();
+  const results = await Promise.all(
+    selectedCities.map(async (city) => {
+      const bmsUrl = `https://in.bookmyshow.com/movies/${city.slug}/${MOVIE_SLUG}/buytickets/${EVENT_CODE}/${date}`;
+      const apiUrl = `https://in.bookmyshow.com/api/movies-data/showtimes-by-event?appCode=MOBAND2&appVersion=14.3.4&language=en&eventCode=${EVENT_CODE}&regionCode=${city.code}&subRegion=${city.code}&dateCode=${date}`;
 
-    // Parse what we find
-    const hasPrasads =
-      lower.includes('prasads') || lower.includes('prasad');
-    const hasPCX =
-      lower.includes('pcx') ||
-      lower.includes('premiere circuit') ||
-      lower.includes('prem circuit');
-    const hasBookNow =
-      lower.includes('book now') ||
-      lower.includes('booknow') ||
-      lower.includes('select seats') ||
-      lower.includes('buy tickets');
-    const isNotOpen =
-      lower.includes('not available') ||
-      lower.includes('coming soon') ||
-      lower.includes('notify me') ||
-      lower.includes('no shows') ||
-      lower.includes('no showtimes');
+      try {
+        const r = await fetch(apiUrl, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Android 13; Mobile) AppleWebKit/537.36',
+            'x-region-code': city.code,
+            Referer: 'https://in.bookmyshow.com/',
+          },
+          cache: 'no-store',
+        });
 
-    let status = 'not_listed';
-    let message = 'Movie not yet listed for this date on BookMyShow.';
+        const text = await r.text();
 
-    if (isNotOpen && !hasBookNow) {
-      status = 'listed_not_open';
-      message = 'Movie is listed but bookings are not open yet.';
-    } else if (hasPrasads && !hasPCX && hasBookNow) {
-      status = 'prasads_no_pcx';
-      message = 'Prasads Multiplex is bookable but PCX screen not available yet.';
-    } else if (hasPrasads && hasPCX && hasBookNow) {
-      status = 'tickets_live';
-      message = 'TICKETS LIVE! Prasads PCX screen is available for booking!';
-    } else if (hasPrasads && hasBookNow) {
-      status = 'prasads_live';
-      message = 'Prasads Multiplex tickets are live! (Verify PCX on site)';
-    } else if (lower.includes('michael') && lower.includes('jackson')) {
-      status = 'listed_not_open';
-      message = 'Movie is listed on BookMyShow but no Hyderabad shows open yet.';
-    }
+        let html = '';
+        if (!r.ok || !text.includes('venueCode')) {
+          const r2 = await fetch(bmsUrl, {
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+              Accept: 'text/html',
+              Referer: 'https://in.bookmyshow.com/',
+            },
+            cache: 'no-store',
+          });
+          html = await r2.text();
+        }
 
-    return res.status(200).json({
-      status,
-      message,
-      checkedAt: new Date().toISOString(),
-      bmsUrl: BMS_URL,
-    });
-  } catch (err) {
-    return res.status(500).json({
-      status: 'error',
-      message: `Check failed: ${err.message}`,
-      checkedAt: new Date().toISOString(),
-    });
-  }
+        const body = (text + html).toLowerCase();
+        const hasVenues = body.includes('venuename') || body.includes('cinemaname');
+        const hasShowtimes = body.includes('showtime') || body.includes('sessionid');
+        const notOpen = body.includes('notavailable') || body.includes('no shows') || body.includes('coming soon') || body.includes('notify me');
+
+        let theatres = [];
+        try {
+          const json = JSON.parse(text);
+          const venues = json?.ShowDetails || json?.BookMyShow?.arrEvent?.[0]?.arrVenues || [];
+          theatres = venues.map(v => v.VenueName || v.venueName || v.CinemaName).filter(Boolean);
+        } catch (_) {}
+
+        let status, message;
+        if (hasShowtimes && hasVenues && !notOpen) {
+          status = 'tickets_live';
+          message = theatres.length > 0 ? `Live at ${theatres.length} theatre${theatres.length > 1 ? 's' : ''}` : 'Showtimes live — book now!';
+        } else if (hasVenues || body.includes('michael')) {
+          status = 'listed_not_open';
+          message = 'Listed but not open yet.';
+        } else {
+          status = 'not_listed';
+          message = 'Not listed yet.';
+        }
+
+        return { city: city.label, code: city.code, status, message, theatres, bmsUrl };
+      } catch (err) {
+        return { city: city.label, code: city.code, status: 'error', message: err.message, theatres: [], bmsUrl };
+      }
+    })
+  );
+
+  return res.status(200).json({
+    results,
+    anyLive: results.some(r => r.status === 'tickets_live'),
+    checkedAt: new Date().toISOString(),
+  });
 }
