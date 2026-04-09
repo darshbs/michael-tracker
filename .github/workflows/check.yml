@@ -10,4 +10,4 @@ jobs:
     steps:
       - name: Ping tracker
         run: |
-          curl -s "https://michael-tracker.vercel.app/api/check?cities=HYD,MUMBAI,BANG,CHEN,NCR&date=20260424&cron=true"
+          curl -s "https://michael-tracker.vercel.app/api/check?cities=HYD&date=20260424&cron=true"
