@@ -1,5 +1,7 @@
 # 🎬 Michael Tracker
 
+<img src="public/michael-movie-title.png" width="50%" />
+
 A Next.js app that monitors BookMyShow and sends you a **Telegram notification the moment tickets go live** for the Michael Jackson biopic *Michael (2026)* — across any city, any theatre.
 
 Live at → **[michael-tracker.vercel.app](https://michael-tracker.vercel.app)**
@@ -163,4 +165,10 @@ Hyderabad, Mumbai, Delhi NCR, Bengaluru, Chennai, Kolkata, Pune, Ahmedabad, Jaip
 Created by Darshan - GitHub: [darshbs](https://github.com/darshbs)
 
 Created for Michael fans with love. 🎤
+
+---
+
+**Disclaimer:** The "Michael" title logo and all related assets are the property of GK Films and the Michael Jackson Estate. Distributed by Lionsgate (US) and Universal Pictures (International). 
+
+This is an independent fan-made project, not affiliated with or endorsed by the filmmakers or studio.
 
