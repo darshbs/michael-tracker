@@ -96,7 +96,7 @@ Once deployed, you'll see the landing page:
 4. Visit `https://api.telegram.org/bot<TOKEN>/getUpdates`
 5. Copy your `chat_id` from the response
 
-![Get Chat ID](screenshots/get-chat-id.png)
+![Get Chat ID](screenshots/get-chat-Id.png)
 
 ---
 
