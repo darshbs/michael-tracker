@@ -30,9 +30,9 @@ But if you want to set up your own version with your own bot, all the instructio
 ```
 GitHub Actions (every 5 min)
         ↓
-/api/check  →  fetches BookMyShow for selected cities
-        ↓
-tickets found?
+/api/check  ↔  fetches BookMyShow for selected cities
+        ↓                       ↑
+tickets found? → no → check again in 5 mins (repeat)
         ↓ yes
 /api/notify  →  Telegram message on your phone
 ```
