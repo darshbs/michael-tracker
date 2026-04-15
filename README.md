@@ -128,7 +128,7 @@ To test manually: GitHub repo → **Actions** tab → **Check Tickets** → **Ru
 Visit this URL after deploying:
 
 ```
-https://michael-tracker.vercel.app/api/notify
+https://[your-app-name].vercel.app/api/notify
 ```
 
 You should receive a message from your bot confirming everything works.
