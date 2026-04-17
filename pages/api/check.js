@@ -60,14 +60,21 @@ export default async function handler(req, res) {
           status = 'tickets_live';
           message = theatres.length > 0 ? `Live at ${theatres.length} theatre${theatres.length > 1 ? 's' : ''}` : 'Showtimes live — book now!';
 
-          const appUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
-          await fetch(`${appUrl}/api/notify`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              message: `🎬 <b>Michael tickets LIVE in ${city.label}!</b>\n\nBook now 👇\n${bmsUrl}`,
-            }),
-          });
+          const token = process.env.TELEGRAM_BOT_TOKEN;
+          const chatId = process.env.TELEGRAM_CHAT_ID;
+          const notifMsg = `🎬 <b>Michael tickets LIVE in ${city.label}!</b>\n\nBook now 👇\n${bmsUrl}`;
+
+          if (token && chatId) {
+            try {
+              await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ chat_id: chatId, text: notifMsg, parse_mode: 'HTML' }),
+              });
+            } catch (err) {
+              console.error('Failed to send telegram notification', err);
+            }
+          }
         } else if (hasVenues || body.includes('michael')) {
           status = 'listed_not_open';
           message = 'Listed but not open yet.';
