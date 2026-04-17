@@ -85,7 +85,7 @@ Push to GitHub → import on [vercel.com](https://vercel.com) → deploy.
 Once deployed, you'll see the landing page:
 
 ![Michael Tracker Landing Page](screenshots/landing-page.png)
-
+ 
 ---
 
 ### 2. Create a Telegram bot
