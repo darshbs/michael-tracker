@@ -52,8 +52,8 @@ export default async function handler(req, res) {
         console.log('API response:', text.slice(0, 500));
         console.log('HTML response:', html.slice(0, 500));
         const body = (text + html).toLowerCase();
-        const hasVenues = body.includes('venuename') || body.includes('cinemaname');
-        const hasShowtimes = body.includes('sessionid'); // stricter — sessionid only appears in real showtime data
+        const hasSessionId = body.includes('"sessionid"') || body.includes('"SessionId"');
+        const hasActualVenue = body.includes('"venuecode"') || body.includes('"VenueCode"');
         const notOpen = body.includes('notavailable') || body.includes('no shows') || body.includes('coming soon') || body.includes('notify me');
 
         let theatres = [];
@@ -64,15 +64,16 @@ export default async function handler(req, res) {
         } catch (_) {}
 
         let status, message;
-        if (hasShowtimes && hasVenues && !notOpen) {
+        if (hasSessionId && hasActualVenue && !notOpen) {
           status = 'tickets_live';
           message = theatres.length > 0 ? `Live at ${theatres.length} theatre${theatres.length > 1 ? 's' : ''}` : 'Showtimes live — book now!';
 
           const token = process.env.TELEGRAM_BOT_TOKEN;
           const chatId = process.env.TELEGRAM_CHAT_ID;
           const notifMsg = `🎬 <b>Michael tickets LIVE in ${city.label}!</b>\n\nBook now 👇\n${bmsUrl}`;
+          const isCron = req.query.cron === process.env.CRON_SECRET;
 
-          if (token && chatId) {
+          if (token && chatId && isCron) {
             try {
               await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
                   method: 'POST',
@@ -83,7 +84,7 @@ export default async function handler(req, res) {
               console.error('Failed to send telegram notification', err);
             }
           }
-        } else if (hasVenues || body.includes('michael')) {
+        } else if (body.includes('michael')) {
           status = 'listed_not_open';
           message = 'Listed but not open yet.';
         } else {
