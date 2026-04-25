@@ -39,6 +39,7 @@ export default function Home() {
   const [selectedCities, setSelectedCities] = useState(['HYD']);
   const [date, setDate] = useState(defaultDate);
   const [telegramId, setTelegramId] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
   const [interval_, setInterval_] = useState(60);
   const [running, setRunning] = useState(false);
   const [checkCount, setCheckCount] = useState(0);
@@ -57,6 +58,16 @@ export default function Home() {
   }, []);
 
 
+
+  const subscribe = async () => {
+    if (!telegramId) return alert('Please enter your Telegram Chat ID');
+    await fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chatId: telegramId, cities: selectedCities, date }),
+    });
+    setSubscribed(true);
+  };
 
   const addLog = useCallback((msg, type = 'info') => {
     const t = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -182,26 +193,21 @@ export default function Home() {
           </div>
 
           <div style={{ ...s.card, marginBottom: 10 }}>
-            <div style={s.cardLabel}>Your Telegram Chat ID (optional)</div>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={s.cardLabel}>Get Telegram Alerts</div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
               <input
                 type="text"
-                placeholder="e.g. 867158822"
+                placeholder="Your Telegram Chat ID"
                 value={telegramId}
                 onChange={e => setTelegramId(e.target.value)}
-                style={{ ...s.dateInput, flex: 1 }}
+                style={{ ...s.dateInput, flex: 1, minWidth: 160, border: '0.5px solid #2A2A2A', borderRadius: 4, padding: '6px 10px' }}
               />
-              <a
-                href="https://t.me/moonwalkalertsbot"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ fontSize: 11, color: '#C9A84C', whiteSpace: 'nowrap' }}
-              >
-                Get your ID →
-              </a>
+              <button onClick={subscribe} style={{ ...s.btnPrimary, flex: 'none', padding: '8px 16px' }}>
+                {subscribed ? '✓ Subscribed!' : 'Subscribe'}
+              </button>
             </div>
-            <div style={{ fontSize: 10, color: '#4A4438', marginTop: 6 }}>
-              Start a chat with @moonwalkalertsbot on Telegram first, then paste your Chat ID here.
+            <div style={{ fontSize: 10, color: '#4A4438', marginTop: 8 }}>
+              Message <a href="https://t.me/moonwalkalertsbot" target="_blank" rel="noopener noreferrer" style={{ color: '#7A6228' }}>@moonwalkalertsbot</a> on Telegram → type /start → paste your Chat ID here. You'll be notified automatically even after closing this tab.
             </div>
           </div>
 
