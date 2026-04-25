@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   const { city } = req.query;
   if (!city) return res.status(400).json({ error: 'Missing city' });
 
-  const apiUrl = `https://in.bookmyshow.com/api/movies-data/showtimes-by-event?appCode=MOBAND2&appVersion=14.3.4&language=en&eventCode=${EVENT_CODE}&regionCode=${city}&subRegion=${city}`;
+  const apiUrl = `https://in.bookmyshow.com/api/movies-data/showtimes-by-event?appCode=MOBAND2&appVersion=14.3.4&language=en&eventCode=${EVENT_CODE}&regionCode=${city}&subRegion=${city}&pageNumber=1&pagesToFetch=10`;
 
   try {
     const r = await fetch(apiUrl, {
@@ -18,9 +18,14 @@ export default async function handler(req, res) {
     });
 
     const json = await r.json();
-    const dates = (json?.ShowDetails || [])
-      .map(s => s.Date)
-      .filter(Boolean);
+
+    // ShowDetails is an array of objects each with a Date field
+    const dates = [...new Set(
+      (json?.ShowDetails || [])
+        .map(s => s.Date)
+        .filter(Boolean)
+        .filter(d => d >= new Date().toISOString().slice(0,10).replace(/-/g,'')) // no past dates
+    )].sort();
 
     return res.status(200).json({ dates });
   } catch (err) {
