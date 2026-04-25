@@ -38,6 +38,8 @@ export default function Home() {
 
   const [selectedCities, setSelectedCities] = useState(['HYD']);
   const [date, setDate] = useState(defaultDate);
+  const [availableDates, setAvailableDates] = useState([]);
+  const [loadingDates, setLoadingDates] = useState(false);
   const [interval_, setInterval_] = useState(60);
   const [running, setRunning] = useState(false);
   const [checkCount, setCheckCount] = useState(0);
@@ -54,6 +56,19 @@ export default function Home() {
   useEffect(() => {
     if ('Notification' in window) setNotifPerm(Notification.permission);
   }, []);
+
+  // fetch dates whenever selected cities changes
+  useEffect(() => {
+    if (selectedCities.length === 0) return;
+    setLoadingDates(true);
+    fetch(`/api/dates?city=${selectedCities[0]}`)
+      .then(r => r.json())
+      .then(data => {
+        setAvailableDates(data.dates || []);
+        if (data.dates?.length > 0) setDate(data.dates[0]);
+      })
+      .finally(() => setLoadingDates(false));
+  }, [selectedCities]);
 
   const addLog = useCallback((msg, type = 'info') => {
     const t = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -157,14 +172,26 @@ export default function Home() {
 
           <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
             <div style={{ ...s.card, flex: 1, marginBottom: 0 }}>
-              <div style={s.cardLabel}>Date</div>
-              <input
-                type="date"
-                value={formatInput(date)}
-                min="2026-04-24"
-                onChange={e => setDate(parseDate(e.target.value))}
-                style={s.dateInput}
-              />
+              <div style={s.cardLabel}>Date {loadingDates && '— fetching…'}</div>
+              {availableDates.length > 0 ? (
+                <select
+                  value={date}
+                  onChange={e => setDate(e.target.value)}
+                  style={s.select}
+                >
+                  {availableDates.map(d => (
+                    <option key={d} value={d}>
+                      {new Date(
+                        d.slice(0,4), d.slice(4,6)-1, d.slice(6,8)
+                      ).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <span style={{ fontSize: 13, color: '#5A5040' }}>
+                  {loadingDates ? 'Loading…' : 'No dates available'}
+                </span>
+              )}
             </div>
             <div style={{ ...s.card, flex: 1, marginBottom: 0 }}>
               <div style={s.cardLabel}>Check every</div>
