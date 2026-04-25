@@ -51,6 +51,8 @@ export default async function handler(req, res) {
 
         console.log('API response:', text.slice(0, 500));
         console.log('HTML response:', html.slice(0, 500));
+        console.log('ShowDetails count:', (json?.ShowDetails || []).length);
+        console.log('Raw dates:', (json?.ShowDetails || []).map(s => s.Date));
         const body = (text + html).toLowerCase();
         let theatres = [];
         let hasActualShowtimes = false;
@@ -67,7 +69,7 @@ export default async function handler(req, res) {
             // Only mark as live if actual venues with sessions exist
             hasActualShowtimes = theatres.length > 0 || venues.length > 0;
           }
-        } catch (_) {}
+        } catch (_) { }
 
         const notOpen = body.includes('notavailable') || body.includes('no shows') || body.includes('coming soon') || body.includes('notify me');
 
@@ -84,9 +86,9 @@ export default async function handler(req, res) {
           if (token && chatId && isCron) {
             try {
               await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ chat_id: chatId, text: notifMsg, parse_mode: 'HTML' }),
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chatId, text: notifMsg, parse_mode: 'HTML' }),
               });
             } catch (err) {
               console.error('Failed to send telegram notification', err);
