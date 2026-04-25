@@ -16,6 +16,12 @@ export default async function handler(req, res) {
   const results = await Promise.all(
     selectedCities.map(async (city) => {
       const bmsUrl = `https://in.bookmyshow.com/movies/${city.slug}/${MOVIE_SLUG}/buytickets/${EVENT_CODE}/${date}`;
+
+      // Don't notify for past dates
+      const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+      if (date < today) {
+        return { city: city.label, code: city.code, status: 'not_listed', message: 'Date has passed.', theatres: [], bmsUrl };
+      }
       const apiUrl = `https://in.bookmyshow.com/api/movies-data/showtimes-by-event?appCode=MOBAND2&appVersion=14.3.4&language=en&eventCode=${EVENT_CODE}&regionCode=${city.code}&subRegion=${city.code}&dateCode=${date}`;
 
       try {
@@ -45,7 +51,7 @@ export default async function handler(req, res) {
 
         const body = (text + html).toLowerCase();
         const hasVenues = body.includes('venuename') || body.includes('cinemaname');
-        const hasShowtimes = body.includes('showtime') || body.includes('sessionid');
+        const hasShowtimes = body.includes('sessionid'); // stricter — sessionid only appears in real showtime data
         const notOpen = body.includes('notavailable') || body.includes('no shows') || body.includes('coming soon') || body.includes('notify me');
 
         let theatres = [];
