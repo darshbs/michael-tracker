@@ -52,19 +52,27 @@ export default async function handler(req, res) {
         console.log('API response:', text.slice(0, 500));
         console.log('HTML response:', html.slice(0, 500));
         const body = (text + html).toLowerCase();
-        const hasSessionId = body.includes('"sessionid"') || body.includes('"SessionId"');
-        const hasActualVenue = body.includes('"venuecode"') || body.includes('"VenueCode"');
-        const notOpen = body.includes('notavailable') || body.includes('no shows') || body.includes('coming soon') || body.includes('notify me');
-
         let theatres = [];
+        let hasActualShowtimes = false;
+
         try {
           const json = JSON.parse(text);
-          const venues = json?.ShowDetails || json?.BookMyShow?.arrEvent?.[0]?.arrVenues || [];
-          theatres = venues.map(v => v.VenueName || v.venueName || v.CinemaName).filter(Boolean);
+          const showDetails = json?.ShowDetails;
+
+          if (Array.isArray(showDetails) && showDetails.length > 0) {
+            const venues = showDetails[0]?.Venues || showDetails[0]?.arrVenues || [];
+            theatres = venues
+              .map(v => v.VenueName || v.venueName || v.CinemaName)
+              .filter(Boolean);
+            // Only mark as live if actual venues with sessions exist
+            hasActualShowtimes = theatres.length > 0 || venues.length > 0;
+          }
         } catch (_) {}
 
+        const notOpen = body.includes('notavailable') || body.includes('no shows') || body.includes('coming soon') || body.includes('notify me');
+
         let status, message;
-        if (hasSessionId && hasActualVenue && !notOpen) {
+        if (hasActualShowtimes && !notOpen) {
           status = 'tickets_live';
           message = theatres.length > 0 ? `Live at ${theatres.length} theatre${theatres.length > 1 ? 's' : ''}` : 'Showtimes live — book now!';
 
