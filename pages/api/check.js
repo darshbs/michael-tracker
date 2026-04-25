@@ -51,14 +51,14 @@ export default async function handler(req, res) {
 
         console.log('API response:', text.slice(0, 500));
         console.log('HTML response:', html.slice(0, 500));
-        console.log('ShowDetails count:', (json?.ShowDetails || []).length);
-        console.log('Raw dates:', (json?.ShowDetails || []).map(s => s.Date));
         const body = (text + html).toLowerCase();
         let theatres = [];
         let hasActualShowtimes = false;
 
         try {
           const json = JSON.parse(text);
+          console.log('ShowDetails count:', (json?.ShowDetails || []).length);
+          console.log('Raw dates:', (json?.ShowDetails || []).map(s => s.Date));
           const showDetails = json?.ShowDetails;
 
           if (Array.isArray(showDetails) && showDetails.length > 0) {
