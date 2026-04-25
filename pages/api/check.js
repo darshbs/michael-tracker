@@ -6,7 +6,7 @@ const MOVIE_SLUG = 'michael';
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  const { cities: citiesParam, date } = req.query;
+  const { cities: citiesParam, date, telegramId } = req.query;
   if (!citiesParam || !date)
     return res.status(400).json({ error: 'Missing cities or date param' });
 
@@ -79,11 +79,10 @@ export default async function handler(req, res) {
           message = theatres.length > 0 ? `Live at ${theatres.length} theatre${theatres.length > 1 ? 's' : ''}` : 'Showtimes live — book now!';
 
           const token = process.env.TELEGRAM_BOT_TOKEN;
-          const chatId = process.env.TELEGRAM_CHAT_ID;
+          const chatId = telegramId || process.env.TELEGRAM_CHAT_ID; // user's ID or fallback to yours
           const notifMsg = `🎬 <b>Michael tickets LIVE in ${city.label}!</b>\n\nBook now 👇\n${bmsUrl}`;
-          const isCron = req.query.cron === process.env.CRON_SECRET;
 
-          if (token && chatId && isCron) {
+          if (token && chatId) {
             try {
               await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
                 method: 'POST',
@@ -91,7 +90,7 @@ export default async function handler(req, res) {
                 body: JSON.stringify({ chat_id: chatId, text: notifMsg, parse_mode: 'HTML' }),
               });
             } catch (err) {
-              console.error('Failed to send telegram notification', err);
+              console.error('Telegram error:', err);
             }
           }
         } else if (body.includes('michael')) {

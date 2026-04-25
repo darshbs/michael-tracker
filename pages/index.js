@@ -38,8 +38,7 @@ export default function Home() {
 
   const [selectedCities, setSelectedCities] = useState(['HYD']);
   const [date, setDate] = useState(defaultDate);
-  const [availableDates, setAvailableDates] = useState([]);
-  const [loadingDates, setLoadingDates] = useState(false);
+  const [telegramId, setTelegramId] = useState('');
   const [interval_, setInterval_] = useState(60);
   const [running, setRunning] = useState(false);
   const [checkCount, setCheckCount] = useState(0);
@@ -57,18 +56,7 @@ export default function Home() {
     if ('Notification' in window) setNotifPerm(Notification.permission);
   }, []);
 
-  // fetch dates whenever selected cities changes
-  useEffect(() => {
-    if (selectedCities.length === 0) return;
-    setLoadingDates(true);
-    fetch(`/api/dates?city=${selectedCities[0]}`)
-      .then(r => r.json())
-      .then(data => {
-        setAvailableDates(data.dates || []);
-        if (data.dates?.length > 0) setDate(data.dates[0]);
-      })
-      .finally(() => setLoadingDates(false));
-  }, [selectedCities]);
+
 
   const addLog = useCallback((msg, type = 'info') => {
     const t = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -82,7 +70,7 @@ export default function Home() {
     addLog(`Checking ${selectedCities.length} cit${selectedCities.length > 1 ? 'ies' : 'y'}…`);
 
     try {
-      const r = await fetch(`/api/check?cities=${selectedCities.join(',')}&date=${date}`, { cache: 'no-store' });
+      const r = await fetch(`/api/check?cities=${selectedCities.join(',')}&date=${date}&telegramId=${telegramId}`, { cache: 'no-store' });
       const data = await r.json();
       setResults(data.results || []);
       setCheckedAt(data.checkedAt);
@@ -107,7 +95,7 @@ export default function Home() {
       setGlobalStatus('error');
       addLog(`Error: ${err.message}`, 'error');
     }
-  }, [selectedCities, date, notifPerm, addLog]);
+  }, [selectedCities, date, telegramId, notifPerm, addLog]);
 
   const start = useCallback(() => {
     if (running || selectedCities.length === 0) return;
@@ -172,26 +160,15 @@ export default function Home() {
 
           <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
             <div style={{ ...s.card, flex: 1, marginBottom: 0 }}>
-              <div style={s.cardLabel}>Date {loadingDates && '— fetching…'}</div>
-              {availableDates.length > 0 ? (
-                <select
-                  value={date}
-                  onChange={e => setDate(e.target.value)}
-                  style={s.select}
-                >
-                  {availableDates.map(d => (
-                    <option key={d} value={d}>
-                      {new Date(
-                        d.slice(0,4), d.slice(4,6)-1, d.slice(6,8)
-                      ).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <span style={{ fontSize: 13, color: '#5A5040' }}>
-                  {loadingDates ? 'Loading…' : 'No dates available'}
-                </span>
-              )}
+              <div style={s.cardLabel}>Date</div>
+              <input
+                type="date"
+                value={formatInput(date)}
+                min={new Date().toISOString().slice(0,10)}
+                max={new Date(Date.now() + 60*24*60*60*1000).toISOString().slice(0,10)}
+                onChange={e => setDate(parseDate(e.target.value))}
+                style={s.dateInput}
+              />
             </div>
             <div style={{ ...s.card, flex: 1, marginBottom: 0 }}>
               <div style={s.cardLabel}>Check every</div>
@@ -201,6 +178,30 @@ export default function Home() {
                 <option value={120}>2 minutes</option>
                 <option value={300}>5 minutes</option>
               </select>
+            </div>
+          </div>
+
+          <div style={{ ...s.card, marginBottom: 10 }}>
+            <div style={s.cardLabel}>Your Telegram Chat ID (optional)</div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input
+                type="text"
+                placeholder="e.g. 867158822"
+                value={telegramId}
+                onChange={e => setTelegramId(e.target.value)}
+                style={{ ...s.dateInput, flex: 1 }}
+              />
+              <a
+                href="https://t.me/MoonwalkAlertBot"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: 11, color: '#C9A84C', whiteSpace: 'nowrap' }}
+              >
+                Get your ID →
+              </a>
+            </div>
+            <div style={{ fontSize: 10, color: '#4A4438', marginTop: 6 }}>
+              Start a chat with @MoonwalkAlertBot on Telegram first, then paste your Chat ID here.
             </div>
           </div>
 
