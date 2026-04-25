@@ -164,8 +164,8 @@ export default function Home() {
               <input
                 type="date"
                 value={formatInput(date)}
-                min={new Date().toISOString().slice(0,10)}
-                max={new Date(Date.now() + 60*24*60*60*1000).toISOString().slice(0,10)}
+                min={new Date().toISOString().slice(0, 10)}
+                max={new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)}
                 onChange={e => setDate(parseDate(e.target.value))}
                 style={s.dateInput}
               />
@@ -192,7 +192,7 @@ export default function Home() {
                 style={{ ...s.dateInput, flex: 1 }}
               />
               <a
-                href="https://t.me/MoonwalkAlertBot"
+                href="https://t.me/moonwalkalertsbot"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ fontSize: 11, color: '#C9A84C', whiteSpace: 'nowrap' }}
@@ -201,7 +201,7 @@ export default function Home() {
               </a>
             </div>
             <div style={{ fontSize: 10, color: '#4A4438', marginTop: 6 }}>
-              Start a chat with @MoonwalkAlertBot on Telegram first, then paste your Chat ID here.
+              Start a chat with @moonwalkalertsbot on Telegram first, then paste your Chat ID here.
             </div>
           </div>
 
