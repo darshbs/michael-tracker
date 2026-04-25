@@ -49,6 +49,8 @@ export default async function handler(req, res) {
           html = await r2.text();
         }
 
+        console.log('API response:', text.slice(0, 500));
+        console.log('HTML response:', html.slice(0, 500));
         const body = (text + html).toLowerCase();
         const hasVenues = body.includes('venuename') || body.includes('cinemaname');
         const hasShowtimes = body.includes('sessionid'); // stricter — sessionid only appears in real showtime data
